@@ -7,6 +7,7 @@ import "reflect-metadata"
 import { loggerMiddleware } from "#/shared/middlewares/logger.middleware";
 import { errorMiddleware } from "#/shared/middlewares/error.middleware";
 import { notFoundMiddleware } from "#/shared/middlewares/not-found.middleware";
+import authRouter from "./modules/auth/auth.routes";
 
 
 dotenv.config();
@@ -24,6 +25,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(loggerMiddleware);
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);
+
+app.use('/auth', authRouter);
 
 async function main() {
   try {

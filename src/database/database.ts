@@ -6,7 +6,7 @@ import { User } from "../modules/user/user.entity";
 dotenv.config();
 
 export class DbClient {
-  public readonly connection = new DataSource({
+  public connection = new DataSource({
     type: "postgres",
     host: process.env["DB_HOST"],
     port: parseInt(process.env["DB_PORT"] || "5432"),
