@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
 import dotenv from "dotenv";
+import { User } from "../modules/user/user.entity";
 
 dotenv.config();
 
@@ -12,7 +13,7 @@ export class DbClient {
     username: process.env["DB_USERNAME"],
     password: process.env["DB_PASSWORD"],
     database: process.env["DB_NAME"],
-    entities: [],
+    entities: [User],
     synchronize: true,
   });
 
