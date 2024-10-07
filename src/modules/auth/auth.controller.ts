@@ -34,7 +34,7 @@ authController.post(
       if (typeof result === 'string') {
         return res.status(400).json({ message: result });
       }
-      return res.status(201).json(result);
+      return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({ message: error });
     }
