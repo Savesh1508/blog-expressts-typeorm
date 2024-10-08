@@ -9,7 +9,7 @@ import {
   NotFoundException,
   UnauthorizedException
 } from '../../shared/exceptions/http.exception';
-import uuid from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 
 export class AuthService {
@@ -20,12 +20,13 @@ export class AuthService {
       const { username, email, password } = signUpDto;
 
       const existingUser = await this.userRepository.findOne({ where: { email } });
+
       if (existingUser) {
         throw new BadRequestException('This user already exists');
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
-      const newUserId = uuid.v4();
+      const newUserId = uuidv4();
 
       const newUser = this.userRepository.create({
         id: newUserId,
@@ -36,14 +37,12 @@ export class AuthService {
 
       const tokens = jwtService.generateTokens({ id: newUser.id, email: newUser.email });
       newUser.refreshToken = tokens.refreshToken;
-
       await this.userRepository.save(newUser);
 
       const { password:_, ...newUserWithOutPassword } = newUser;
-
       return {
         ...newUserWithOutPassword,
-        token: tokens.accessToken,
+        accessToken: tokens.accessToken,
       };
     } catch (error) {
       if (error instanceof BadRequestException) {
@@ -74,7 +73,8 @@ export class AuthService {
 
 
       return {
-        token: tokens.accessToken,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
       };
     } catch (error) {
       if (error instanceof NotFoundException || error instanceof UnauthorizedException) {

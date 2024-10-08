@@ -1,3 +1,4 @@
+import { setRefreshTokenCookie } from './../../shared/utils/cookieUtils';
 import { Router, Request, Response } from "express";
 import { db } from "../../database/database";
 import { User } from "../user/user.entity";
@@ -16,6 +17,8 @@ authController.post(
       const signUpDto: SignUpDto = req.body;
       const result = await authService.signup(signUpDto);
 
+      setRefreshTokenCookie(res, result.refreshToken)
+
       return res.status(201).json(result);
     } catch (error) {
       if (error instanceof BadRequestException) {
@@ -23,7 +26,8 @@ authController.post(
       }
       return res.status(500).json({ message: error });
     }
-})
+  }
+)
 
 authController.post(
   "/login",
@@ -31,6 +35,8 @@ authController.post(
     try {
       const loginDto: LoginDto = req.body;
       const result = await authService.login(loginDto);
+
+      setRefreshTokenCookie(res, result.refreshToken)
 
       return res.status(200).json(result);
     } catch (error)  {
@@ -42,4 +48,5 @@ authController.post(
       }
       return res.status(500).json({ message: error });
     }
-})
+  }
+)

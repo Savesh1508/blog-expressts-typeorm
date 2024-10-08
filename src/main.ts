@@ -1,8 +1,9 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { db } from "./database/database";
+import cookieParser from "cookie-parser";
 import "reflect-metadata"
+import { db } from "./database/database";
 
 import { loggerMiddleware } from "#/shared/middlewares/logger.middleware";
 import { errorMiddleware } from "#/shared/middlewares/error.middleware";
@@ -21,9 +22,10 @@ app.use(
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(loggerMiddleware);
-app.use(notFoundMiddleware);
 app.use(errorMiddleware);
+// app.use(notFoundMiddleware);
 
 app.use('/auth', authController);
 
