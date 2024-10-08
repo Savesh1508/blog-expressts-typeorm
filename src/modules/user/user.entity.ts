@@ -2,7 +2,7 @@ import { Entity, PrimaryColumn, Column } from 'typeorm';
 
 @Entity()
 export class User {
-  @PrimaryColumn({type: 'varchar', nullable: false})
+  @PrimaryColumn({type: 'uuid', nullable: false})
   id!: string;
 
   @Column({ type: 'varchar', length: 100, nullable: false })
@@ -17,7 +17,8 @@ export class User {
   @Column({ type: 'varchar', nullable: true })
   refreshToken: string;
 
-  constructor(username: string, email: string, password: string, refreshToken?: string) {
+  constructor(id:string, username: string, email: string, password: string, refreshToken?: string) {
+    this.id = id
     this.username = username;
     this.email = email;
     this.password = password;

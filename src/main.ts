@@ -9,6 +9,7 @@ import { loggerMiddleware } from "#/shared/middlewares/logger.middleware";
 import { errorMiddleware } from "#/shared/middlewares/error.middleware";
 import { notFoundMiddleware } from "#/shared/middlewares/not-found.middleware";
 import { authController } from "./modules/auth/auth.controller";
+import { blogController } from "./modules/blog/blog.controller";
 
 dotenv.config();
 const app = express();
@@ -23,11 +24,15 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(loggerMiddleware);
-app.use(errorMiddleware);
-// app.use(notFoundMiddleware);
 
 app.use('/auth', authController);
+app.use('/blogs', blogController);
+
+app.use(loggerMiddleware);
+app.use(errorMiddleware);
+app.use(notFoundMiddleware);
+
+
 
 async function main() {
   try {
