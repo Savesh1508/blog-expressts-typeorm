@@ -15,12 +15,12 @@ export class User {
   password: string;
 
   @Column({ type: 'varchar', nullable: true })
-  refreshToken?: string;
+  refreshToken: string;
 
   constructor(username: string, email: string, password: string, refreshToken?: string) {
     this.username = username;
     this.email = email;
     this.password = password;
-    this.refreshToken = refreshToken;
+    this.refreshToken = refreshToken || "";
   }
 }

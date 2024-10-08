@@ -20,7 +20,6 @@ export class DbClient {
   public async init() {
     try {
       await this.connection.initialize();
-      console.log("Database successfully initialized");
     } catch (error) {
       console.error("Error initializing database:", error);
       throw error;
