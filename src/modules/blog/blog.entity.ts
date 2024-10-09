@@ -6,12 +6,12 @@ export class Blog {
   @PrimaryColumn({type: 'uuid', nullable: false})
   id!: string;
 
-  @ManyToOne(() => User, user => user.id)
-  @JoinColumn({ name: 'authorId', referencedColumnName: 'id' }) // Связываем с User
-  author!: User;
-
   @Column({type: "uuid", nullable: false})
   authorId: string;
+
+  @ManyToOne(() => User, (user) => user.blogs)
+  @JoinColumn({ name: 'authorId' })
+  author!: User
 
   @Column({ type: 'varchar', length: 120, nullable: false, unique:true })
   title: string;

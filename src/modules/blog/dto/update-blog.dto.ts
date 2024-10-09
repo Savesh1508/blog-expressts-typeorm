@@ -1,14 +1,17 @@
-import { IsNotEmpty, MaxLength, IsArray, IsString } from 'class-validator';
+import { z } from 'zod';
 
-export class UpdateBlogDto {
-  @IsNotEmpty()
-  @MaxLength(120)
-  title?: string;
+export const blogUpdateDtoSchema = z.object({
+  title: z
+    .string()
+    .min(3)
+    .max(255)
+    .optional(),
+  content: z
+    .string()
+    .optional(),
+  tags: z
+    .array(z.string())
+    .optional()
+});
 
-  @IsNotEmpty()
-  content?: string;
-
-  @IsArray()
-  @IsString({ each: true })
-  tags?: string[];
-}
+export type UpdateBlogDto = z.infer<typeof blogUpdateDtoSchema>;

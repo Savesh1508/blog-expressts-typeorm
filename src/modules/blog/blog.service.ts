@@ -8,22 +8,22 @@ import { Blog } from './blog.entity';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { User } from '../user/user.entity';
 
 
 export class BlogService {
-  constructor(private blogRepository: Repository<Blog>) {}
+  constructor(private blogRepository: Repository<Blog>, private userRepository: Repository<User>) {}
 
   async createBlog(createBlogDto: CreateBlogDto) {
     try {
       const { authorId, title, content, tags } = createBlogDto;
 
-      const existingBlog = await this.blogRepository.findOne({ where: { title } });
-      if (existingBlog) {
-        throw new BadRequestException('Blog with this title already exists');
+      const author = await this.userRepository.findOne({ where: { id: authorId } });
+      if (!author) {
+        throw new BadRequestException('Author not found');
       }
 
       const newBlogId = uuidv4();
-
       const newBlog = this.blogRepository.create({
         id: newBlogId,
         authorId,
@@ -32,9 +32,8 @@ export class BlogService {
         tags,
       });
 
-      await this.blogRepository.save(newBlog);
-
-      return newBlog;
+      const savedBlog = await this.blogRepository.save(newBlog);
+      return savedBlog;
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
@@ -42,6 +41,7 @@ export class BlogService {
       throw new InternalServerErrorException('Creating blog failed');
     }
   }
+
 
   async getAllBlogs() {
     try {
@@ -86,9 +86,8 @@ export class BlogService {
         blog.tags = tags;
       }
 
-      await this.blogRepository.save(blog);
-
-      return blog;
+      const savedBlog = await this.blogRepository.save(blog);
+      return savedBlog;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;

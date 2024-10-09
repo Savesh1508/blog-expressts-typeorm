@@ -1,17 +1,18 @@
-import { IsNotEmpty, IsUUID, MaxLength, IsArray, IsString } from 'class-validator';
+import { z } from 'zod';
 
-export class CreateBlogDto {
-  @IsUUID()
-  authorId!: string;
+export const blogCreateDtoSchema = z.object({
+  authorId: z
+    .string()
+    .uuid('Invalid author id'),
+  title: z
+    .string()
+    .min(3)
+    .max(255),
+  content: z
+    .string(),
+  tags: z
+    .array(z.string())
+    .optional()
+});
 
-  @IsNotEmpty()
-  @MaxLength(120)
-  title!: string;
-
-  @IsNotEmpty()
-  content!: string;
-
-  @IsArray()
-  @IsString({ each: true })
-  tags!: string[];
-}
+export type CreateBlogDto = z.infer<typeof blogCreateDtoSchema>;
