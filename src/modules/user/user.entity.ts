@@ -1,8 +1,9 @@
-import { Entity, PrimaryColumn, Column } from 'typeorm';
+import { Entity, PrimaryColumn, Column, OneToMany, JoinColumn } from 'typeorm';
+import { Blog } from '../blog/blog.entity';
 
 @Entity()
 export class User {
-  @PrimaryColumn({type: 'varchar', nullable: false})
+  @PrimaryColumn({type: 'uuid', nullable: false})
   id!: string;
 
   @Column({ type: 'varchar', length: 100, nullable: false })
@@ -17,7 +18,11 @@ export class User {
   @Column({ type: 'varchar', nullable: true })
   refreshToken: string;
 
-  constructor(username: string, email: string, password: string, refreshToken?: string) {
+  @OneToMany(() => Blog, (blog) => blog.author)
+  blogs!: Blog[]
+
+  constructor(id:string, username: string, email: string, password: string, refreshToken?: string) {
+    this.id = id
     this.username = username;
     this.email = email;
     this.password = password;

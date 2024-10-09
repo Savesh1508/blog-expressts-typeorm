@@ -1,13 +1,14 @@
-import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { z } from 'zod';
 
-export class SignUpDto {
-  @IsNotEmpty()
-  username!: string;
+export const SignUpDtoSchema = z.object({
+  username: z
+    .string(),
+  email: z
+    .string()
+    .email(),
+  password: z
+    .string()
+    .min(8)
+});
 
-  @IsEmail()
-  email!: string;
-
-  @IsNotEmpty()
-  @MinLength(8)
-  password!: string;
-}
+export type SignUpDto = z.infer<typeof SignUpDtoSchema>;
