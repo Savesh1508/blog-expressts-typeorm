@@ -59,10 +59,13 @@ export class BlogService {
     try {
       const blog = await this.blogRepository.findOne({ where: { id }});
       if (!blog) {
-        return {message: 'Blog not found'}
+        throw new NotFoundException('Blog not found');
       }
       return blog;
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
       throw new InternalServerErrorException('Something went wrong');
     }
   }
