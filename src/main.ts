@@ -10,6 +10,7 @@ import { errorMiddleware } from "#/shared/middlewares/error.middleware";
 import { notFoundMiddleware } from "#/shared/middlewares/not-found.middleware";
 import { authController } from "./modules/auth/auth.controller";
 import { blogController } from "./modules/blog/blog.controller";
+import { commentController } from "./modules/comments/comments.controller";
 
 dotenv.config();
 const app = express();
@@ -27,6 +28,7 @@ app.use(cookieParser());
 
 app.use('/auth', authController);
 app.use('/blogs', blogController);
+app.use('/comments', commentController);
 
 app.use(loggerMiddleware);
 app.use(errorMiddleware);

@@ -1,5 +1,6 @@
-import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { User } from '../user/user.entity';
+import { Comment } from '../comments/comments.entity';
 
 @Entity()
 export class Blog {
@@ -13,7 +14,7 @@ export class Blog {
   @JoinColumn({ name: 'authorId' })
   author!: User
 
-  @Column({ type: 'varchar', length: 120, nullable: false, unique:true })
+  @Column({ type: 'varchar', length: 120, nullable: false })
   title: string;
 
   @Column({ type: 'text', nullable: false })
@@ -21,6 +22,9 @@ export class Blog {
 
   @Column('text', { array: true, nullable: true })
   tags?: string[];
+
+  @OneToMany(() => Comment, (comment) => comment.blog)
+  comments!: Comment[];
 
   constructor(id:string, authorId: string, title: string, content: string, tags?: string[]) {
     this.id = id

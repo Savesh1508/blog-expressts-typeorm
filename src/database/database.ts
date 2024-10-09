@@ -3,6 +3,7 @@ import { DataSource } from "typeorm";
 import dotenv from "dotenv";
 import { User } from "../modules/user/user.entity";
 import { Blog } from "../modules/blog/blog.entity";
+import { Comment } from "../modules/comments/comments.entity";
 
 dotenv.config();
 
@@ -14,7 +15,7 @@ export class DbClient {
     username: process.env["DB_USERNAME"],
     password: process.env["DB_PASSWORD"],
     database: process.env["DB_NAME"],
-    entities: [User, Blog],
+    entities: [User, Blog, Comment],
     synchronize: true,
   });
 

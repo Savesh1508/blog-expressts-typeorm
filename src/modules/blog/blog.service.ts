@@ -1,8 +1,8 @@
-import { NotFoundException } from './../../shared/exceptions/http.exception';
 import { Repository } from 'typeorm';
 import {
   BadRequestException,
   InternalServerErrorException,
+  NotFoundException
 } from '../../shared/exceptions/http.exception';
 import { Blog } from './blog.entity';
 import { CreateBlogDto } from './dto/create-blog.dto';
@@ -35,6 +35,8 @@ export class BlogService {
       const savedBlog = await this.blogRepository.save(newBlog);
       return savedBlog;
     } catch (error) {
+      console.log(error);
+      
       if (error instanceof BadRequestException) {
         throw error;
       }
@@ -51,7 +53,7 @@ export class BlogService {
       }
       return blogs;
     } catch (error) {
-      throw new InternalServerErrorException('Something went wrong');
+      throw new InternalServerErrorException('Getting blogs failed');
     }
   }
 
@@ -66,7 +68,7 @@ export class BlogService {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      throw new InternalServerErrorException('Something went wrong');
+      throw new InternalServerErrorException('Getting blogs failed');
     }
   }
 
