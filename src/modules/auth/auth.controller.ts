@@ -22,7 +22,7 @@ authController.post(
 
     return res.status(StatusCodes.CREATED).json({
       message: `User succesfully registered`,
-      token: result.accessToken
+      data: result
     });
   })
 )
@@ -38,7 +38,7 @@ authController.post(
 
     return res.status(StatusCodes.CREATED).json({
       message: `User succesfully login`,
-      token: result.accessToken
+      tokens: result
     });
   })
 )

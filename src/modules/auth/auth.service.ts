@@ -49,7 +49,7 @@ export class AuthService {
 
     const findUser = await this.userRepository.findOne({ where: { email } });
     if (!findUser) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('Incorrect email or password');
     }
 
     const isTruePassword = await bcrypt.compare(password, findUser.password);
