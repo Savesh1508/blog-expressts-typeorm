@@ -1,3 +1,4 @@
+import { StatusCodes } from 'http-status-codes';
 import { Router, Request, Response } from "express";
 import { db } from "../../database/database";
 import { commentRouteParamsDtoSchema } from './dto/route-params-comments.dto';
@@ -9,6 +10,7 @@ import { CommentService } from './comments.service';
 import { validateRequestBody } from '../../shared/validators/request-body.validator';
 import { validateRequestParams } from '../../shared/validators/request-params.validator';
 import { Blog } from "../blog/blog.entity";
+import { requestHandler } from "../../shared/utils/request-handler.util";
 
 export const commentController = Router();
 const commentService = new CommentService(
@@ -21,36 +23,28 @@ commentController.put(
   "/:id",
   validateRequestParams(commentRouteParamsDtoSchema),
   validateRequestBody(commentUpdateDtoSchema),
-  async(req:Request, res:Response) => {
-    try {
-      const commentId:string = req.params["id"] as string;
-      const updateCommentDto: UpdateCommentDto = req.body;
-      const result = await commentService.updateCommentById(commentId, updateCommentDto);
+  requestHandler(async(req:Request, res:Response) => {
+    const commentId:string = req.params["id"] as string;
+    const updateCommentDto: UpdateCommentDto = req.body;
+    const result = await commentService.updateCommentById(commentId, updateCommentDto);
 
-      return res.status(200).json(result);
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        return res.status(404).json({ message: error.message });
-      }
-      return res.status(500).json({ message: error });
-    }
-  }
+    return res.status(StatusCodes.OK).json({
+      message: `Comment succesfully updated`,
+      data: result
+    });
+  })
 )
 
 commentController.delete(
   "/:id",
   validateRequestParams(commentRouteParamsDtoSchema),
-  async(req:Request, res:Response) => {
-    try {
-      const commentId:string = req.params["id"] as string;
-      const result = await commentService.deleteCommentById(commentId);
+  requestHandler(async(req:Request, res:Response) => {
+    const commentId:string = req.params["id"] as string;
+    const result = await commentService.deleteCommentById(commentId);
 
-      return res.status(200).json(result);
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        return res.status(404).json({ message: error.message });
-      }
-      return res.status(500).json({ message: error });
-    }
-  }
+    return res.status(StatusCodes.OK).json({
+      message: `Comment succesfully deleted`,
+      data: result
+    });
+  })
 )

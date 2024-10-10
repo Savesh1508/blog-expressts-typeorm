@@ -19,85 +19,62 @@ export class CommentService {
   ) {}
 
   async createComment(blogId:string, createCommentDto: CreateCommentDto) {
-    try {
-      const { userId, content } = createCommentDto;
+    const { userId, content } = createCommentDto;
 
-      const author = await this.userRepository.findOne({ where: { id: userId } });
-      if (!author) {
-        throw new BadRequestException('Author not found');
-      }
-      const blog = await this.blogRepository.findOne({ where: { id: blogId } });
-      if (!blog) {
-        throw new BadRequestException('Blog not found');
-      }
-
-      const newCommentId = uuidv4();
-      const newComment = this.commentRepository.create({
-        id: newCommentId,
-        userId,
-        blogId,
-        content
-      });
-
-      const savedComment = await this.commentRepository.save(newComment);
-      return savedComment;
-    } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Creating comment failed');
+    const author = await this.userRepository.findOne({ where: { id: userId } });
+    if (!author) {
+      throw new BadRequestException('Author not found');
     }
+    const blog = await this.blogRepository.findOne({ where: { id: blogId } });
+    if (!blog) {
+      throw new BadRequestException('Blog not found');
+    }
+
+    const newCommentId = uuidv4();
+    const newComment = this.commentRepository.create({
+      id: newCommentId,
+      userId,
+      blogId,
+      content
+    });
+
+    const savedComment = await this.commentRepository.save(newComment);
+
+    return savedComment;
   }
 
   async getBlogComments(blogId:string) {
-    try {
-      const comments = await this.commentRepository.find({ where: { blogId } });
-      if (!comments.length) {
-        return {message: 'No comments'}
-      }
-      return comments;
-    } catch (error) {
-      throw new InternalServerErrorException('Getting comments failed');
+    const comments = await this.commentRepository.find({ where: { blogId } });
+    if (!comments.length) {
+      return {message: 'No comments'}
     }
+
+    return comments;
   }
 
   async updateCommentById(id: string, updateCommentDto: UpdateCommentDto) {
-    try {
-      const { content } = updateCommentDto;
+    const { content } = updateCommentDto;
 
-      const comment = await this.commentRepository.findOne({ where: { id } });
-      if (!comment) {
-        throw new NotFoundException('Comment not found');
-      }
-
-      if (content) {
-        comment.content = content;
-      }
-
-      const savedComment = await this.commentRepository.save(comment);
-      return savedComment;
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Updating comment failed');
+    const comment = await this.commentRepository.findOne({ where: { id } });
+    if (!comment) {
+      throw new NotFoundException('Comment not found');
     }
+
+    if (content) {
+      comment.content = content;
+    }
+
+    const savedComment = await this.commentRepository.save(comment);
+    return savedComment;
   }
 
   async deleteCommentById(id:string) {
-    try {
-      const comment = await this.commentRepository.findOne({ where: { id }});
-      if (!comment) {
-        throw new NotFoundException('There is not comment with such id')
-      }
-
-      await this.commentRepository.delete(id)
-      return { message: 'Comment successfully deleted' };
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Deleting comment failed');
+    const comment = await this.commentRepository.findOne({ where: { id }});
+    if (!comment) {
+      throw new NotFoundException('There is not comment with such id')
     }
+
+    const deletedComment = await this.commentRepository.delete(id)
+    return deletedComment;
   }
 }

@@ -5,7 +5,6 @@ import { jwtService } from '../../shared/utils/JwtService';
 import { Repository } from 'typeorm';
 import {
   BadRequestException,
-  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException
 } from '../../shared/exceptions/http.exception';
@@ -16,71 +15,56 @@ export class AuthService {
   constructor(private userRepository: Repository<User>) {}
 
   async signup(signUpDto: SignUpDto) {
-    try {
-      const { username, email, password } = signUpDto;
+    const { username, email, password } = signUpDto;
 
-      const existingUser = await this.userRepository.findOne({ where: { email } });
+    const existingUser = await this.userRepository.findOne({ where: { email } });
 
-      if (existingUser) {
-        throw new BadRequestException('This user already exists');
-      }
-
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const newUserId = uuidv4();
-
-      const newUser = this.userRepository.create({
-        id: newUserId,
-        username,
-        email,
-        password: hashedPassword,
-      });
-
-      const tokens = jwtService.generateTokens({ id: newUser.id, email: newUser.email });
-      newUser.refreshToken = tokens.refreshToken;
-      await this.userRepository.save(newUser);
-
-      const { password:_, ...newUserWithOutPassword } = newUser;
-      return {
-        ...newUserWithOutPassword,
-        accessToken: tokens.accessToken,
-      };
-    } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Signup failed');
+    if (existingUser) {
+      throw new BadRequestException('This user already exists');
     }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUserId = uuidv4();
+
+    const newUser = this.userRepository.create({
+      id: newUserId,
+      username,
+      email,
+      password: hashedPassword,
+    });
+
+    const tokens = jwtService.generateTokens({ id: newUser.id, email: newUser.email });
+    newUser.refreshToken = tokens.refreshToken;
+    await this.userRepository.save(newUser);
+
+    const { password:_, ...newUserWithOutPassword } = newUser;
+    return {
+      ...newUserWithOutPassword,
+      accessToken: tokens.accessToken,
+    };
   }
 
   async login(loginDto: LoginDto) {
-    try {
-      const { email, password } = loginDto;
+    const { email, password } = loginDto;
 
-      const findUser = await this.userRepository.findOne({ where: { email } });
-      if (!findUser) {
-        throw new NotFoundException('User not found');
-      }
-
-      const isTruePassword = await bcrypt.compare(password, findUser.password);
-      if (!isTruePassword) {
-        throw new UnauthorizedException('Incorrect email or password');
-      }
-
-      const tokens = jwtService.generateTokens({ id: findUser.id, email: findUser.email });
-      findUser.refreshToken = tokens.refreshToken;
-
-      await this.userRepository.save(findUser);
-
-
-      return {
-        accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken,
-      };
-    } catch (error) {
-      if (error instanceof NotFoundException || error instanceof UnauthorizedException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Login failed');
+    const findUser = await this.userRepository.findOne({ where: { email } });
+    if (!findUser) {
+      throw new NotFoundException('Incorrect email or password');
     }
+
+    const isTruePassword = await bcrypt.compare(password, findUser.password);
+    if (!isTruePassword) {
+      throw new UnauthorizedException('Incorrect email or password');
+    }
+
+    const tokens = jwtService.generateTokens({ id: findUser.id, email: findUser.email });
+    findUser.refreshToken = tokens.refreshToken;
+
+    await this.userRepository.save(findUser);
+
+    return {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    };
   }
 }
