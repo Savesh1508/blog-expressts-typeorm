@@ -1,3 +1,4 @@
+import { StatusCodes } from 'http-status-codes';
 import { setRefreshTokenCookie } from './../../shared/utils/cookieUtils';
 import { Router, Request, Response } from "express";
 import { db } from "../../database/database";
@@ -6,47 +7,38 @@ import { AuthService } from "./auth.service";
 import { SignUpDto } from "../user/dto/auth-signup.dto";
 import { LoginDto } from "../user/dto/auth-login.dto";
 import { BadRequestException, NotFoundException, UnauthorizedException } from "../../shared/exceptions/http.exception";
+import { requestHandler } from '../../shared/utils/request-handler.util';
 
 export const authController = Router();
 const authService = new AuthService(db.connection.getRepository(User))
 
 authController.post(
   "/signup",
-  async(req:Request, res:Response) => {
-    try {
-      const signUpDto: SignUpDto = req.body;
-      const result = await authService.signup(signUpDto);
+  requestHandler(async(req:Request, res:Response) => {
+    const signUpDto: SignUpDto = req.body;
+    const result = await authService.signup(signUpDto);
 
-      setRefreshTokenCookie(res, result.refreshToken)
+    setRefreshTokenCookie(res, result.refreshToken)
 
-      return res.status(201).json(result);
-    } catch (error) {
-      if (error instanceof BadRequestException) {
-        return res.status(400).json({ message: error.message });
-      }
-      return res.status(500).json({ message: error });
-    }
-  }
+    return res.status(StatusCodes.CREATED).json({
+      message: `User succesfully registered`,
+      token: result.accessToken
+    });
+  })
 )
 
 authController.post(
   "/login",
-  async(req:Request, res:Response) => {
-    try {
-      const loginDto: LoginDto = req.body;
-      const result = await authService.login(loginDto);
+  requestHandler(
+    async(req:Request, res:Response) => {
+    const loginDto: LoginDto = req.body;
+    const result = await authService.login(loginDto);
 
-      setRefreshTokenCookie(res, result.refreshToken)
+    setRefreshTokenCookie(res, result.refreshToken);
 
-      return res.status(200).json(result);
-    } catch (error)  {
-      if (error instanceof NotFoundException) {
-        return res.status(400).json({ message: error.message });
-      }
-      if (error instanceof UnauthorizedException) {
-        return res.status(400).json({ message: error.message });
-      }
-      return res.status(500).json({ message: error });
-    }
-  }
+    return res.status(StatusCodes.CREATED).json({
+      message: `User succesfully login`,
+      token: result.accessToken
+    });
+  })
 )

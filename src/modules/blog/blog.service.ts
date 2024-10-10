@@ -15,106 +15,71 @@ export class BlogService {
   constructor(private blogRepository: Repository<Blog>, private userRepository: Repository<User>) {}
 
   async createBlog(createBlogDto: CreateBlogDto) {
-    try {
-      const { authorId, title, content, tags } = createBlogDto;
+    const { authorId, title, content, tags } = createBlogDto;
 
-      const author = await this.userRepository.findOne({ where: { id: authorId } });
-      if (!author) {
-        throw new BadRequestException('Author not found');
-      }
-
-      const newBlogId = uuidv4();
-      const newBlog = this.blogRepository.create({
-        id: newBlogId,
-        authorId,
-        title,
-        content,
-        tags,
-      });
-
-      const savedBlog = await this.blogRepository.save(newBlog);
-      return savedBlog;
-    } catch (error) {
-      console.log(error);
-      
-      if (error instanceof BadRequestException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Creating blog failed');
+    const author = await this.userRepository.findOne({ where: { id: authorId } });
+    if (!author) {
+      throw new BadRequestException('Author not found');
     }
+
+    const newBlogId = uuidv4();
+    const newBlog = this.blogRepository.create({
+      id: newBlogId,
+      authorId,
+      title,
+      content,
+      tags,
+    });
+
+    const savedBlog = await this.blogRepository.save(newBlog);
+    return savedBlog;
   }
 
-
   async getAllBlogs() {
-    try {
-      const blogs = await this.blogRepository.find();
-      if (!blogs.length) {
-        return {message: 'Blogs are empty!'}
-      }
-      return blogs;
-    } catch (error) {
-      throw new InternalServerErrorException('Getting blogs failed');
+    const blogs = await this.blogRepository.find();
+    if (!blogs.length) {
+      return 'Blogs are empty!'
     }
+    return blogs;
   }
 
   async getBlogById(id:string) {
-    try {
-      const blog = await this.blogRepository.findOne({ where: { id }});
-      if (!blog) {
-        throw new NotFoundException('Blog not found');
-      }
-      return blog;
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Getting blogs failed');
+    const blog = await this.blogRepository.findOne({ where: { id }});
+    if (!blog) {
+      throw new NotFoundException('Blog not found');
     }
+    return blog;
   }
 
   async updateBlogById(id: string, updateBlogDto: UpdateBlogDto) {
-    try {
-      const { title, content, tags } = updateBlogDto;
+    const { title, content, tags } = updateBlogDto;
 
-      const blog = await this.blogRepository.findOne({ where: { id } });
-      if (!blog) {
-        throw new NotFoundException('Blog not found');
-      }
-
-      if (title) {
-        blog.title = title;
-      }
-      if (content) {
-        blog.content = content;
-      }
-      if (tags) {
-        blog.tags = tags;
-      }
-
-      const savedBlog = await this.blogRepository.save(blog);
-      return savedBlog;
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Updating blog failed');
+    const blog = await this.blogRepository.findOne({ where: { id } });
+    if (!blog) {
+      throw new NotFoundException('Blog not found');
     }
+
+    if (title) {
+      blog.title = title;
+    }
+    if (content) {
+      blog.content = content;
+    }
+    if (tags) {
+      blog.tags = tags;
+    }
+
+    const savedBlog = await this.blogRepository.save(blog);
+    return savedBlog;
   }
 
   async deleteBlogById(id:string) {
-    try {
-      const blog = await this.blogRepository.findOne({ where: { id }});
-      if (!blog) {
-        throw new NotFoundException('There is not blog with such id')
-      }
-
-      await this.blogRepository.delete(id)
-      return { message: 'Blog successfully deleted' };
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Deleting blog failed');
+    const blog = await this.blogRepository.findOne({ where: { id }});
+    if (!blog) {
+      throw new NotFoundException('There is not blog with such id')
     }
+
+    const deletedBlog = await this.blogRepository.delete(id)
+    return deletedBlog;
   }
 }
