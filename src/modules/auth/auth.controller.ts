@@ -1,3 +1,4 @@
+import { signUpDtoSchema } from './../user/dto/auth-signup.dto';
 import { StatusCodes } from 'http-status-codes';
 import { setRefreshTokenCookie } from './../../shared/utils/cookieUtils';
 import { Router, Request, Response } from "express";
@@ -5,14 +6,16 @@ import { db } from "../../database/database";
 import { User } from "../user/user.entity";
 import { AuthService } from "./auth.service";
 import { SignUpDto } from "../user/dto/auth-signup.dto";
-import { LoginDto } from "../user/dto/auth-login.dto";
+import { LoginDto, loginDtoSchema } from "../user/dto/auth-login.dto";
 import { requestHandler } from '../../shared/utils/request-handler.util';
+import { validateRequestBody } from '../../shared/validators/request-body.validator';
 
 export const authController = Router();
 const authService = new AuthService(db.connection.getRepository(User))
 
 authController.post(
   "/signup",
+  validateRequestBody(signUpDtoSchema),
   requestHandler(async(req:Request, res:Response) => {
     const signUpDto: SignUpDto = req.body;
     const result = await authService.signup(signUpDto);
@@ -28,6 +31,7 @@ authController.post(
 
 authController.post(
   "/login",
+  validateRequestBody(loginDtoSchema),
   requestHandler(
     async(req:Request, res:Response) => {
     const loginDto: LoginDto = req.body;

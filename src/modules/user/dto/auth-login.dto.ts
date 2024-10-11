@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const LoginDtoSchema = z.object({
+export const loginDtoSchema = z.object({
   email: z
     .string()
     .email(),
@@ -9,4 +9,4 @@ export const LoginDtoSchema = z.object({
     .min(8)
 });
 
-export type LoginDto = z.infer<typeof LoginDtoSchema>;
+export type LoginDto = z.infer<typeof loginDtoSchema>;
