@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Column, OneToMany, JoinColumn } from 'typeorm';
+import { Entity, PrimaryColumn, Column, OneToMany, CreateDateColumn } from 'typeorm';
 import { Blog } from '../blog/blog.entity';
 
 @Entity()
@@ -17,6 +17,9 @@ export class User {
 
   @Column({ type: 'varchar', nullable: true })
   refreshToken: string;
+
+  @CreateDateColumn({ type: 'timestamp with time zone', nullable: false })
+  createdAt!: Date;
 
   @OneToMany(() => Blog, (blog) => blog.author)
   blogs!: Blog[]

@@ -16,13 +16,9 @@ import { StatusCodes } from "http-status-codes";
 
 export const blogController = Router();
 
-const blogService = new BlogService(
-  db.connection.getRepository(Blog),
-  db.connection.getRepository(User)
-)
+const blogService = new BlogService(db.connection.getRepository(Blog))
 const commentService = new CommentService(
   db.connection.getRepository(Comment),
-  db.connection.getRepository(User),
   db.connection.getRepository(Blog)
 )
 

@@ -6,7 +6,6 @@ import { User } from "../user/user.entity";
 import { AuthService } from "./auth.service";
 import { SignUpDto } from "../user/dto/auth-signup.dto";
 import { LoginDto } from "../user/dto/auth-login.dto";
-import { BadRequestException, NotFoundException, UnauthorizedException } from "../../shared/exceptions/http.exception";
 import { requestHandler } from '../../shared/utils/request-handler.util';
 
 export const authController = Router();
@@ -36,7 +35,7 @@ authController.post(
 
     setRefreshTokenCookie(res, result.refreshToken);
 
-    return res.status(StatusCodes.CREATED).json({
+    return res.status(StatusCodes.OK).json({
       message: `User succesfully login`,
       tokens: result
     });

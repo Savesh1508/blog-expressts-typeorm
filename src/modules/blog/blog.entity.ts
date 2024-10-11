@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Comment } from '../comments/comments.entity';
 
@@ -22,6 +22,12 @@ export class Blog {
 
   @Column('text', { array: true, nullable: true })
   tags?: string[];
+
+  @CreateDateColumn({ type: 'timestamp with time zone', nullable: false })
+  createdAt!: Date;
+
+  @UpdateDateColumn({ type: 'timestamp with time zone', nullable: false })
+  updatedAt!: Date;
 
   @OneToMany(() => Comment, (comment) => comment.blog)
   comments!: Comment[];

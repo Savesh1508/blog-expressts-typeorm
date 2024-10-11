@@ -15,7 +15,6 @@ import { requestHandler } from "../../shared/utils/request-handler.util";
 export const commentController = Router();
 const commentService = new CommentService(
   db.connection.getRepository(Comment),
-  db.connection.getRepository(User),
   db.connection.getRepository(Blog)
 )
 
