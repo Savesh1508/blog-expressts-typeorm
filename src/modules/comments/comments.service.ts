@@ -14,17 +14,12 @@ import { Blog } from '../blog/blog.entity';
 export class CommentService {
   constructor(
     private commentRepository: Repository<Comment>,
-    private userRepository: Repository<User>,
     private blogRepository: Repository<Blog>
   ) {}
 
   async createComment(blogId:string, createCommentDto: CreateCommentDto) {
     const { userId, content } = createCommentDto;
 
-    const author = await this.userRepository.findOne({ where: { id: userId } });
-    if (!author) {
-      throw new BadRequestException('Author not found');
-    }
     const blog = await this.blogRepository.findOne({ where: { id: blogId } });
     if (!blog) {
       throw new BadRequestException('Blog not found');
@@ -46,7 +41,7 @@ export class CommentService {
   async getBlogComments(blogId:string) {
     const comments = await this.commentRepository.find({ where: { blogId } });
     if (!comments.length) {
-      return {message: 'No comments'}
+      throw new NotFoundException('No comments');
     }
 
     return comments;

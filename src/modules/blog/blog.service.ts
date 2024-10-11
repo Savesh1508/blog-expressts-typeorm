@@ -8,19 +8,12 @@ import { Blog } from './blog.entity';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { User } from '../user/user.entity';
-
 
 export class BlogService {
-  constructor(private blogRepository: Repository<Blog>, private userRepository: Repository<User>) {}
+  constructor(private blogRepository: Repository<Blog>) {}
 
   async createBlog(createBlogDto: CreateBlogDto) {
     const { authorId, title, content, tags } = createBlogDto;
-
-    const author = await this.userRepository.findOne({ where: { id: authorId } });
-    if (!author) {
-      throw new BadRequestException('Author not found');
-    }
 
     const newBlogId = uuidv4();
     const newBlog = this.blogRepository.create({
@@ -38,7 +31,7 @@ export class BlogService {
   async getAllBlogs() {
     const blogs = await this.blogRepository.find();
     if (!blogs.length) {
-      return 'Blogs are empty!'
+      throw new NotFoundException('Blogs are empty');
     }
     return blogs;
   }
