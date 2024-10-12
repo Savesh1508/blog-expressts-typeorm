@@ -41,7 +41,7 @@ authController.post(
 
     return res.status(StatusCodes.OK).json({
       message: `User succesfully login`,
-      tokens: result
+      data: result
     });
   })
 )

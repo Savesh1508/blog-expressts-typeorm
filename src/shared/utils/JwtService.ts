@@ -18,7 +18,6 @@ class JwtService {
     try {
       return jwt.verify(token, this.accessKey);
     } catch (error) {
-      console.log("Invalid token:", error);
       return null;
     }
   }
@@ -27,7 +26,6 @@ class JwtService {
     try {
       return jwt.verify(token, this.refreshKey);
     } catch (error) {
-      console.log("Invalid token:", error);
       return null;
     }
   }
