@@ -4,7 +4,6 @@ import { blogRouteParamsDtoSchema } from './dto/route-params-blog.dto';
 import { CreateBlogDto, blogCreateDtoSchema } from './dto/create-blog.dto';
 import { blogUpdateDtoSchema, UpdateBlogDto } from './dto/update-blog.dto';
 import { Blog } from './blog.entity';
-import { User } from '../user/user.entity';
 import { BlogService } from './blog.service';
 import { CommentService } from '../comments/comments.service';
 import { validateRequestBody } from '../../shared/validators/request-body.validator';
@@ -13,18 +12,24 @@ import { commentCreateDtoSchema, CreateCommentDto } from "../comments/dto/create
 import { Comment } from "../comments/comments.entity";
 import { requestHandler } from "../../shared/utils/request-handler.util";
 import { StatusCodes } from "http-status-codes";
+import { isValidUserMiddleware } from "../../shared/middlewares/isValidUser.middleware";
+import { isValidBlogMiddleware } from "../../shared/middlewares/isValidBlog.middleware";
+import { authGuard } from "../../shared/middlewares/guards/auth.guard";
+import { userSelfGuard } from "../../shared/middlewares/guards/user-self.guard";
+import { adminGuard } from "../../shared/middlewares/guards/admin.guard";
+import { userSelfOrAdminGuard } from "../../shared/middlewares/guards/user-self-or-admin.guard";
+
 
 export const blogController = Router();
 
 const blogService = new BlogService(db.connection.getRepository(Blog))
-const commentService = new CommentService(
-  db.connection.getRepository(Comment),
-  db.connection.getRepository(Blog)
-)
+const commentService = new CommentService(db.connection.getRepository(Comment))
 
 blogController.post(
   "/",
+  authGuard,
   validateRequestBody(blogCreateDtoSchema),
+  isValidUserMiddleware,
   requestHandler(async(req:Request, res:Response) => {
     const createBlogDto: CreateBlogDto = req.body;
     const result = await blogService.createBlog(createBlogDto);
@@ -64,6 +69,8 @@ blogController.get(
 
 blogController.put(
   "/:id",
+  authGuard,
+  userSelfGuard(Blog, 'authorId'),
   validateRequestParams(blogRouteParamsDtoSchema),
   validateRequestBody(blogUpdateDtoSchema),
   requestHandler(async(req:Request, res:Response) => {
@@ -80,6 +87,8 @@ blogController.put(
 
 blogController.delete(
   "/:id",
+  authGuard,
+  userSelfOrAdminGuard(Blog, 'authorId'),
   validateRequestParams(blogRouteParamsDtoSchema),
   requestHandler(async(req:Request, res:Response) => {
     const blogId:string = req.params["id"] as string;
@@ -96,7 +105,9 @@ blogController.post(
   "/:id/comments",
   validateRequestParams(blogRouteParamsDtoSchema),
   validateRequestBody(commentCreateDtoSchema),
-  requestHandler( async(req:Request, res:Response) => {
+  isValidUserMiddleware,
+  isValidBlogMiddleware,
+  requestHandler(async(req:Request, res:Response) => {
     const blogId:string = req.params["id"] as string;
     const createCommentDto: CreateCommentDto = req.body;
     const result = await commentService.createComment(blogId, createCommentDto);
@@ -111,6 +122,7 @@ blogController.post(
 blogController.get(
   "/:id/comments",
   validateRequestParams(blogRouteParamsDtoSchema),
+  isValidBlogMiddleware,
   requestHandler(async(req:Request, res:Response) => {
     const blogId:string = req.params["id"] as string;
     const result = await commentService.getBlogComments(blogId);

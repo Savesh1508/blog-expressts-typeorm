@@ -1,5 +1,6 @@
 import { Entity, PrimaryColumn, Column, OneToMany, CreateDateColumn } from 'typeorm';
 import { Blog } from '../blog/blog.entity';
+import { Roles } from '../../shared/types/user-roles.types';
 
 @Entity()
 export class User {
@@ -18,17 +19,28 @@ export class User {
   @Column({ type: 'varchar', nullable: true })
   refreshToken: string;
 
+  @Column({ type: 'enum', enum:Roles, default:Roles.USER, nullable:false})
+  role: Roles
+
   @CreateDateColumn({ type: 'timestamp with time zone', nullable: false })
   createdAt!: Date;
 
   @OneToMany(() => Blog, (blog) => blog.author)
   blogs!: Blog[]
 
-  constructor(id:string, username: string, email: string, password: string, refreshToken?: string) {
+  constructor(
+    id:string,
+    username:string,
+    email:string,
+    password:string,
+    role:Roles,
+    refreshToken?:string,
+  ) {
     this.id = id
     this.username = username;
     this.email = email;
     this.password = password;
+    this.role = role;
     this.refreshToken = refreshToken || "";
   }
 }

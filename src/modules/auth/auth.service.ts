@@ -10,6 +10,7 @@ import {
 } from '../../shared/exceptions/http.exception';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
+import { Roles } from '../../shared/types/user-roles.types';
 
 export class AuthService {
   constructor(private userRepository: Repository<User>) {}
@@ -31,9 +32,10 @@ export class AuthService {
       username,
       email,
       password: hashedPassword,
+      role: Roles.USER
     });
 
-    const tokens = jwtService.generateTokens({ id: newUser.id, email: newUser.email });
+    const tokens = jwtService.generateTokens({ id: newUser.id, email: newUser.email , role: newUser.role});
     newUser.refreshToken = tokens.refreshToken;
     await this.userRepository.save(newUser);
 
@@ -57,14 +59,16 @@ export class AuthService {
       throw new UnauthorizedException('Incorrect email or password');
     }
 
-    const tokens = jwtService.generateTokens({ id: findUser.id, email: findUser.email });
+    const tokens = jwtService.generateTokens({ id: findUser.id, email: findUser.email, role: findUser.role });
     findUser.refreshToken = tokens.refreshToken;
 
     await this.userRepository.save(findUser);
 
+    const { password:_, role:__, ...userWithOutPasswordAndRole } = findUser
+
     return {
+      ...userWithOutPasswordAndRole,
       accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
-    };
+    }
   }
 }
