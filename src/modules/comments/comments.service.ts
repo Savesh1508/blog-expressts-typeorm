@@ -39,7 +39,11 @@ export class CommentService {
   }
 
   async getBlogComments(blogId:string) {
-    const comments = await this.commentRepository.find({ where: { blogId } });
+    const comments = await this.commentRepository.find({
+      where: { blogId },
+      order: { createdAt: 'DESC' }
+    });
+
     if (!comments.length) {
       throw new NotFoundException('No comments');
     }
