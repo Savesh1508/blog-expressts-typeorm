@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { ILike, Raw, Repository } from 'typeorm';
 import {
   BadRequestException,
   InternalServerErrorException,
@@ -8,6 +8,8 @@ import { Blog } from './blog.entity';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { GetBlogsQueryDto } from './dto/get-blog-query.dto';
+import { skip } from 'node:test';
 
 export class BlogService {
   constructor(private blogRepository: Repository<Blog>) {}
@@ -28,12 +30,28 @@ export class BlogService {
     return savedBlog;
   }
 
-  async getAllBlogs() {
-    const blogs = await this.blogRepository.find();
-    if (!blogs.length) {
-      throw new NotFoundException('Blogs are empty');
+  async getAllBlogs(queryDto: GetBlogsQueryDto) {
+    const { search = '', page = 1, limit = 10 } = queryDto
+
+    const [blogs , total] = await this.blogRepository.findAndCount(
+      {
+        where: [
+          { content: ILike('%'+ search +'%')},
+          { title: ILike('%'+ search +'%')},
+          { tags: Raw((alias) => `:search = ANY(${alias})`, { search }) }
+        ],
+        skip: (page - 1) * limit,
+        take: limit
+      },
+    )
+
+    const pages = Math.ceil(total / limit)
+
+    return {
+      blogs,
+      pages,
+      total
     }
-    return blogs;
   }
 
   async getBlogById(id:string) {
