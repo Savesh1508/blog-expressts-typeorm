@@ -1,3 +1,4 @@
+import { GetBlogsQueryDto, getBlogsQueryDtoSchema } from './dto/get-blog-query.dto';
 import { Router, Request, Response } from "express";
 import { db } from "../../database/database";
 import { blogRouteParamsDtoSchema } from './dto/route-params-blog.dto';
@@ -12,6 +13,7 @@ import { commentCreateDtoSchema, CreateCommentDto } from "../comments/dto/create
 import { Comment } from "../comments/comments.entity";
 import { requestHandler } from "../../shared/utils/request-handler.util";
 import { StatusCodes } from "http-status-codes";
+import { validateRequestQuery } from '../../shared/validators/request-query.validator';
 import { isValidUserMiddleware } from "../../shared/middlewares/isValidUser.middleware";
 import { isValidBlogMiddleware } from "../../shared/middlewares/isValidBlog.middleware";
 import { authGuard } from "../../shared/middlewares/guards/auth.guard";
@@ -43,12 +45,16 @@ blogController.post(
 
 blogController.get(
   "/",
-  requestHandler(async(req:Request, res:Response) => {
-    const result = await blogService.getAllBlogs();
+  validateRequestQuery(getBlogsQueryDtoSchema),
+  requestHandler(async (req: Request, res: Response) => {
+    const query = req.query as unknown as GetBlogsQueryDto
+    const result = await blogService.getAllBlogs(query);
 
     return res.status(StatusCodes.OK).json({
       message: `Blogs succesfully received`,
-      data: result
+      data: result.blogs,
+      pages: result.pages,
+      total: result.total,
     });
   })
 )
@@ -56,8 +62,8 @@ blogController.get(
 blogController.get(
   "/:id",
   validateRequestParams(blogRouteParamsDtoSchema),
-  requestHandler(async(req:Request, res:Response) => {
-    const blogId:string = req.params["id"] as string;
+  requestHandler(async (req: Request, res: Response) => {
+    const blogId: string = req.params["id"] as string;
     const result = await blogService.getBlogById(blogId);
 
     return res.status(StatusCodes.OK).json({
@@ -73,8 +79,8 @@ blogController.put(
   userSelfGuard(Blog, 'authorId'),
   validateRequestParams(blogRouteParamsDtoSchema),
   validateRequestBody(blogUpdateDtoSchema),
-  requestHandler(async(req:Request, res:Response) => {
-    const blogId:string = req.params["id"] as string;
+  requestHandler(async (req: Request, res: Response) => {
+    const blogId: string = req.params["id"] as string;
     const updateBlogDto: UpdateBlogDto = req.body;
     const result = await blogService.updateBlogById(blogId, updateBlogDto);
 
@@ -90,8 +96,8 @@ blogController.delete(
   authGuard,
   userSelfOrAdminGuard(Blog, 'authorId'),
   validateRequestParams(blogRouteParamsDtoSchema),
-  requestHandler(async(req:Request, res:Response) => {
-    const blogId:string = req.params["id"] as string;
+  requestHandler(async (req: Request, res: Response) => {
+    const blogId: string = req.params["id"] as string;
     const result = await blogService.deleteBlogById(blogId);
 
     return res.status(StatusCodes.OK).json({

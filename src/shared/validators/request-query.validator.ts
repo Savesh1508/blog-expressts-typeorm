@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { z, ZodError } from "zod";
 
-export function validateRequestParams(schema: z.ZodObject<any, any>) {
+export function validateRequestQuery(schema: z.ZodObject<any, any>) {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
-      req.params = schema.parse(req.params);
+      req.query = schema.parse(req.query)
       next();
     } catch (error) {
       if (error instanceof ZodError) {
@@ -18,7 +18,7 @@ export function validateRequestParams(schema: z.ZodObject<any, any>) {
 
       return res.status(400).json({
         message: "Bad Request",
-        errors: ["Invalid params"],
+        errors: ["Invalid search params"],
       });
     }
   };
