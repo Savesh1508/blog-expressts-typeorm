@@ -10,7 +10,7 @@ import {
 } from '../../shared/exceptions/http.exception';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
-import { Roles } from '../../shared/types/user-roles.types';
+import { Roles } from '../../shared/constants/roles.constants';
 
 export class AuthService {
   constructor(private userRepository: Repository<User>) {}
@@ -32,7 +32,7 @@ export class AuthService {
       username,
       email,
       password: hashedPassword,
-      role: Roles.USER
+      role: Roles.ADMIN
     });
 
     const tokens = jwtService.generateTokens({ id: newUser.id, email: newUser.email , role: newUser.role});

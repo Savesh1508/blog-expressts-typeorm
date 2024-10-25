@@ -7,7 +7,7 @@ const userRepo = db.connection.getRepository(User)
 
 export async function isValidUserMiddleware(
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ){
   try {
