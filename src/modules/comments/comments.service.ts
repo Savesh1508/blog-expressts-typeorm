@@ -1,5 +1,5 @@
 import { NotFoundException } from './../../shared/exceptions/http.exception';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { Comment } from './comments.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -11,13 +11,24 @@ export class CommentService {
   ) {}
 
   async createComment(blogId:string, createCommentDto: CreateCommentDto) {
-    const { userId, content } = createCommentDto;
+    const { userId, content, parentCommentId } = createCommentDto;
+
+
+    const parentComment = parentCommentId
+      ? await this.commentRepository.findOne({ where: { id: parentCommentId } })
+      : null;
+
+    if (parentCommentId && !parentComment) {
+      throw new NotFoundException('Parent comment not found');
+    }
+
     const newCommentId = uuidv4();
     const newComment = this.commentRepository.create({
       id: newCommentId,
       userId,
       blogId,
-      content
+      content,
+      parentComment
     });
 
     const savedComment = await this.commentRepository.save(newComment);
@@ -27,7 +38,10 @@ export class CommentService {
 
   async getBlogComments(blogId:string) {
     const comments = await this.commentRepository.find({
-      where: { blogId },
+      where: {
+        blogId,
+        parentCommentId: IsNull()
+      },
       order: { createdAt: 'DESC' }
     });
 
@@ -35,7 +49,23 @@ export class CommentService {
       throw new NotFoundException('No comments');
     }
 
-    return comments;
+    const commentsWithReplies = await this.loadReplies(comments);
+
+    return commentsWithReplies;
+  }
+
+  private async loadReplies(comments: Comment[]) {
+    const promises = comments.map(async (comment) => {
+      const replies = await this.commentRepository.find({
+        where: { parentCommentId: comment.id },
+        order: { createdAt: 'ASC' }
+      });
+
+      comment.replies = await this.loadReplies(replies);
+      return comment;
+    });
+
+    return Promise.all(promises);
   }
 
   async updateCommentById(id: string, updateCommentDto: UpdateCommentDto) {

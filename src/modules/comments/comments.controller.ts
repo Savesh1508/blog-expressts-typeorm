@@ -18,11 +18,11 @@ const commentService = new CommentService(db.connection.getRepository(Comment))
 commentController.put(
   "/:id",
   authGuard,
-  userSelfGuard(Comment, 'userId'),
   validateRequestParams(commentRouteParamsDtoSchema),
   validateRequestBody(commentUpdateDtoSchema),
+  userSelfGuard(Comment, 'userId'),
   requestHandler(async(req:Request, res:Response) => {
-    const commentId:string = req.params["id"] as string;
+    const commentId = req.params["id"] as string;
     const updateCommentDto: UpdateCommentDto = req.body;
     const result = await commentService.updateCommentById(commentId, updateCommentDto);
 
@@ -36,10 +36,10 @@ commentController.put(
 commentController.delete(
   "/:id",
   authGuard,
-  userSelfOrAdminGuard(Comment, 'userId'),
   validateRequestParams(commentRouteParamsDtoSchema),
+  userSelfOrAdminGuard(Comment, 'userId'),
   requestHandler(async(req:Request, res:Response) => {
-    const commentId:string = req.params["id"] as string;
+    const commentId = req.params["id"] as string;
     const result = await commentService.deleteCommentById(commentId);
 
     return res.status(StatusCodes.OK).json({

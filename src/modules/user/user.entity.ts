@@ -1,13 +1,13 @@
 import { Entity, PrimaryColumn, Column, OneToMany, CreateDateColumn } from 'typeorm';
 import { Blog } from '../blog/blog.entity';
-import { Roles } from '../../shared/types/user-roles.types';
+import { Roles } from '../../shared/constants/roles.constants';
 
 @Entity()
 export class User {
   @PrimaryColumn({type: 'uuid', nullable: false})
   id!: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: false })
+  @Column({ type: 'varchar', length: 100, nullable: false, unique: true })
   username: string;
 
   @Column({ type: 'varchar', length: 150, unique: true, nullable: false })

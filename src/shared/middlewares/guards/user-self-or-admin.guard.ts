@@ -1,9 +1,8 @@
 import { StatusCodes } from 'http-status-codes';
 import { Request, Response, NextFunction } from 'express';
-import { db } from '../../../database/database';
 import { ForbiddenException, NotFoundException } from '../../exceptions/http.exception';
-import { Roles } from '../../types/user-roles.types';
 import { userSelfGuard } from './user-self.guard';
+import { Roles } from '../../constants/roles.constants';
 
 export function userSelfOrAdminGuard(entity: any, userIdField: string) {
   const selfGuard = userSelfGuard(entity, userIdField);

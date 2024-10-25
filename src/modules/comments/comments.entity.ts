@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { Blog } from '../blog/blog.entity';
 
 @Entity()
@@ -19,11 +19,22 @@ export class Comment {
   @Column({ type: 'text', nullable: false })
   content: string;
 
+  @Column({type: "uuid", nullable: true})
+  parentCommentId?: string;
+
+  @ManyToOne(() => Comment, (comment) => comment.replies, { nullable: true })
+  @JoinColumn({name: 'parentCommentId'})
+  parentComment?: Comment | null
+
   @CreateDateColumn({ type: 'timestamp with time zone', nullable: false })
   createdAt!: Date;
 
   @UpdateDateColumn({ type: 'timestamp with time zone', nullable: false })
   updatedAt!: Date;
+
+  @OneToMany(() => Comment, (comment) => comment.parentComment)
+  replies?: Comment[]
+
 
   constructor(id:string, blogId:string, userId:string, content:string) {
     this.id = id
