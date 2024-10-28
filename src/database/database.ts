@@ -4,6 +4,7 @@ import { User } from "../modules/user/user.entity";
 import { Blog } from "../modules/blog/blog.entity";
 import { Comment } from "../modules/comments/comments.entity";
 import { envConfig } from "../shared/config/env.config";
+import { Like } from "../modules/likes/likes.entity";
 
 export class DbClient {
   public connection = new DataSource({
@@ -13,7 +14,7 @@ export class DbClient {
     username: envConfig.DB_USERNAME,
     password: envConfig.DB_PASSWORD,
     database: envConfig.DB_NAME,
-    entities: [User, Blog, Comment],
+    entities: [User, Blog, Comment, Like],
     synchronize: true,
   });
 

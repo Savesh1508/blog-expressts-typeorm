@@ -6,9 +6,13 @@ import { Blog } from './blog.entity';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { GetBlogsQueryDto } from './dto/get-blog-query.dto';
+import { Like } from '../likes/likes.entity';
 
 export class BlogService {
-  constructor(private blogRepository: Repository<Blog>) {}
+  constructor(
+    private blogRepository: Repository<Blog>,
+    private likeRepository: Repository<Like>
+  ) {}
 
   async createBlog(createBlogDto: CreateBlogDto) {
     const { authorId, title, content, tags } = createBlogDto;
@@ -86,5 +90,35 @@ export class BlogService {
 
     const deletedBlog = await this.blogRepository.delete(id)
     return deletedBlog;
+  }
+
+  async toggleBlogLike(id: string, userId: string) {
+    const blog = await this.blogRepository.findOne({ where: { id } });
+    if (!blog) {
+      throw new NotFoundException('Blog not found');
+    }
+
+    const existingLike = await this.likeRepository.findOne({
+      where: {
+        blogId: id,
+        userId,
+      }
+    });
+
+    if (existingLike) {
+      await this.likeRepository.delete(existingLike.id);
+      blog.likesCount -= 1;
+    } else {
+      const newLike = this.likeRepository.create({
+        userId,
+        blogId: id,
+      });
+      await this.likeRepository.save(newLike);
+      blog.likesCount += 1;
+    }
+
+    const savedBlog = await this.blogRepository.save(blog);
+
+    return savedBlog;
   }
 }

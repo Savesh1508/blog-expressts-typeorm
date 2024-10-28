@@ -19,12 +19,21 @@ import { isValidBlogMiddleware } from "../../shared/middlewares/isValidBlog.midd
 import { authGuard } from "../../shared/middlewares/guards/auth.guard";
 import { userSelfGuard } from "../../shared/middlewares/guards/user-self.guard";
 import { userSelfOrAdminGuard } from "../../shared/middlewares/guards/user-self-or-admin.guard";
+import { Like } from '../likes/likes.entity';
 
 
 export const blogController = Router();
 
-const blogService = new BlogService(db.connection.getRepository(Blog))
-const commentService = new CommentService(db.connection.getRepository(Comment))
+const blogService = new BlogService(
+  db.connection.getRepository(Blog),
+  db.connection.getRepository(Like)
+)
+
+
+const commentService = new CommentService(
+  db.connection.getRepository(Comment),
+  db.connection.getRepository(Like),
+)
 
 blogController.post(
   "/",
@@ -101,6 +110,21 @@ blogController.delete(
 
     return res.status(StatusCodes.OK).json({
       message: `Blog succesfully deleted`,
+      data: result
+    });
+  })
+)
+
+blogController.post(
+  "/:id/like",
+  authGuard,
+  validateRequestParams(blogRouteParamsDtoSchema),
+  requestHandler(async(req:Request, res:Response) => {
+    const userId = req.user.id
+    const blogId = req.params["id"] as string;
+    const result = await commentService.toggleCommentLike(blogId, userId)
+
+    return res.status(StatusCodes.OK).json({
       data: result
     });
   })
