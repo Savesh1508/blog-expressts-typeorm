@@ -1,3 +1,4 @@
+import { userController } from './modules/user/user.controller';
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -25,6 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use('/auth', authController);
+app.use('/users', userController)
 app.use('/blogs', blogController);
 app.use('/comments', commentController);
 

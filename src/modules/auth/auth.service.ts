@@ -8,7 +8,6 @@ import {
   NotFoundException,
   UnauthorizedException
 } from '../../shared/exceptions/http.exception';
-import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import { Roles } from '../../shared/constants/roles.constants';
 
@@ -25,10 +24,8 @@ export class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUserId = uuidv4();
 
     const newUser = this.userRepository.create({
-      id: newUserId,
       username,
       email,
       password: hashedPassword,
