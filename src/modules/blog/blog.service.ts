@@ -5,7 +5,6 @@ import {
 import { Blog } from './blog.entity';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
-import { v4 as uuidv4 } from 'uuid';
 import { GetBlogsQueryDto } from './dto/get-blog-query.dto';
 
 export class BlogService {
@@ -14,9 +13,7 @@ export class BlogService {
   async createBlog(createBlogDto: CreateBlogDto) {
     const { authorId, title, content, tags } = createBlogDto;
 
-    const newBlogId = uuidv4();
     const newBlog = this.blogRepository.create({
-      id: newBlogId,
       authorId,
       title,
       content,

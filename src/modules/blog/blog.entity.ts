@@ -1,11 +1,11 @@
-import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, OneToMany, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Comment } from '../comments/comments.entity';
 
 @Entity()
 export class Blog {
-  @PrimaryColumn({type: 'uuid', nullable: false})
-  id!: string;
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column({type: "uuid", nullable: false})
   authorId: string;
