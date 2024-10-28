@@ -1,7 +1,5 @@
 import { ILike, Raw, Repository } from 'typeorm';
 import {
-  BadRequestException,
-  InternalServerErrorException,
   NotFoundException
 } from '../../shared/exceptions/http.exception';
 import { Blog } from './blog.entity';
@@ -9,7 +7,6 @@ import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { GetBlogsQueryDto } from './dto/get-blog-query.dto';
-import { skip } from 'node:test';
 
 export class BlogService {
   constructor(private blogRepository: Repository<Blog>) {}

@@ -1,9 +1,9 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import "reflect-metadata"
 import { db } from "./database/database";
+import { envConfig } from "./shared/config/env.config"
 
 import { loggerMiddleware } from "#/shared/middlewares/logger.middleware";
 import { errorMiddleware } from "#/shared/middlewares/error.middleware";
@@ -12,9 +12,7 @@ import { authController } from "./modules/auth/auth.controller";
 import { blogController } from "./modules/blog/blog.controller";
 import { commentController } from "./modules/comments/comments.controller";
 
-dotenv.config();
 const app = express();
-const PORT = process.env["PORT"] || 3000;
 
 app.use(
   cors({
@@ -40,8 +38,8 @@ async function main() {
   try {
     await db.init();
 
-    app.listen(PORT, () => {
-      console.log(`Server successfully started at port - ${PORT}`);
+    app.listen(envConfig.PORT, () => {
+      console.log(`Server successfully started at port - ${envConfig.PORT}`);
     });
   } catch (error) {
     console.log("Unexpected error:", error);
