@@ -32,7 +32,7 @@ export class AuthService {
       username,
       email,
       password: hashedPassword,
-      role: Roles.ADMIN
+      role: Roles.USER
     });
 
     const tokens = jwtService.generateTokens({ id: newUser.id, email: newUser.email , role: newUser.role});

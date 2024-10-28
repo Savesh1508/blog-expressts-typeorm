@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken"
-import dotenv from "dotenv";
-dotenv.config();
+import { envConfig } from "../config/env.config";
 
 class JwtService {
   constructor(
@@ -42,8 +41,8 @@ class JwtService {
 }
 
 export const jwtService = new JwtService(
-  process.env["ACCESS_KEY"] || "",
-  process.env["REFRESH_KEY"] || "",
-  process.env["ACCESS_TIME"] || "",
-  process.env["REFRESH_TIME"] || ""
+  envConfig.ACCESS_KEY,
+  envConfig.REFRESH_KEY,
+  envConfig.ACCESS_TIME,
+  envConfig.REFRESH_TIME,
 )

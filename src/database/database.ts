@@ -1,20 +1,18 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
-import dotenv from "dotenv";
 import { User } from "../modules/user/user.entity";
 import { Blog } from "../modules/blog/blog.entity";
 import { Comment } from "../modules/comments/comments.entity";
-
-dotenv.config();
+import { envConfig } from "../shared/config/env.config";
 
 export class DbClient {
   public connection = new DataSource({
     type: "postgres",
-    host: process.env["DB_HOST"],
-    port: parseInt(process.env["DB_PORT"] || "5432"),
-    username: process.env["DB_USERNAME"],
-    password: process.env["DB_PASSWORD"],
-    database: process.env["DB_NAME"],
+    host: envConfig.DB_HOST,
+    port: envConfig.DB_PORT,
+    username: envConfig.DB_USERNAME,
+    password: envConfig.DB_PASSWORD,
+    database: envConfig.DB_NAME,
     entities: [User, Blog, Comment],
     synchronize: true,
   });
