@@ -1,10 +1,10 @@
-import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Blog } from '../blog/blog.entity';
 
 @Entity()
 export class Comment {
-  @PrimaryColumn({type: 'uuid', nullable: false})
-  id!: string;
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column({type: "uuid", nullable: false})
   blogId: string;
@@ -34,7 +34,6 @@ export class Comment {
 
   @OneToMany(() => Comment, (comment) => comment.parentComment)
   replies?: Comment[]
-
 
   constructor(id:string, blogId:string, userId:string, content:string) {
     this.id = id

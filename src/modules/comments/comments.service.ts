@@ -3,7 +3,6 @@ import { IsNull, Repository } from 'typeorm';
 import { Comment } from './comments.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { v4 as uuidv4 } from 'uuid';
 
 export class CommentService {
   constructor(
@@ -13,7 +12,6 @@ export class CommentService {
   async createComment(blogId:string, createCommentDto: CreateCommentDto) {
     const { userId, content, parentCommentId } = createCommentDto;
 
-
     const parentComment = parentCommentId
       ? await this.commentRepository.findOne({ where: { id: parentCommentId } })
       : null;
@@ -22,9 +20,7 @@ export class CommentService {
       throw new NotFoundException('Parent comment not found');
     }
 
-    const newCommentId = uuidv4();
     const newComment = this.commentRepository.create({
-      id: newCommentId,
       userId,
       blogId,
       content,
