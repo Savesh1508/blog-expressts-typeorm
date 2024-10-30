@@ -1,6 +1,8 @@
 import { Entity, PrimaryColumn, Column, OneToMany, CreateDateColumn } from 'typeorm';
 import { Blog } from '../blog/blog.entity';
 import { Roles } from '../../shared/constants/roles.constants';
+import { Comment } from '../comments/comments.entity';
+import { Like } from '../likes/likes.entity';
 
 @Entity()
 export class User {
@@ -27,6 +29,12 @@ export class User {
 
   @OneToMany(() => Blog, (blog) => blog.author)
   blogs!: Blog[]
+
+  @OneToMany(() => Comment, comment => comment.user)
+  comments!: Comment[];
+
+  @OneToMany(() => Like, like => like.user)
+  likes!: Like[];
 
   constructor(
     id:string,

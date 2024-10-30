@@ -1,5 +1,7 @@
-import { Entity, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, OneToMany, PrimaryGeneratedColumn, BeforeUpdate } from 'typeorm';
 import { Blog } from '../blog/blog.entity';
+import { User } from '../user/user.entity';
+import { Like } from '../likes/likes.entity';
 
 @Entity()
 export class Comment {
@@ -11,6 +13,10 @@ export class Comment {
 
   @Column({type: "uuid", nullable: false})
   userId: string;
+
+  @ManyToOne(() => User, (user) => user.comments)
+  @JoinColumn({ name: 'userId' })
+  user!: User
 
   @ManyToOne(() => Blog, (blog) => blog.comments)
   @JoinColumn({ name: 'blogId' })
@@ -34,6 +40,19 @@ export class Comment {
 
   @OneToMany(() => Comment, (comment) => comment.parentComment)
   replies?: Comment[]
+
+  @OneToMany(() => Like, like => like.comment)
+  likes!: Like[];
+
+  @Column({ type: "int", default: 0 })
+  likesCount!: number;
+
+  @BeforeUpdate()
+  checkLikesCount() {
+    if (this.likesCount < 0) {
+      this.likesCount = 0;
+    }
+  }
 
   constructor(id:string, blogId:string, userId:string, content:string) {
     this.id = id

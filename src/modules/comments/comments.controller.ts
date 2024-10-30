@@ -1,3 +1,4 @@
+import { Like } from './../likes/likes.entity';
 import { StatusCodes } from 'http-status-codes';
 import { Router, Request, Response } from "express";
 import { db } from "../../database/database";
@@ -13,7 +14,10 @@ import { userSelfGuard } from '../../shared/middlewares/guards/user-self.guard';
 import { userSelfOrAdminGuard } from '../../shared/middlewares/guards/user-self-or-admin.guard';
 
 export const commentController = Router();
-const commentService = new CommentService(db.connection.getRepository(Comment))
+const commentService = new CommentService(
+  db.connection.getRepository(Comment),
+  db.connection.getRepository(Like)
+)
 
 commentController.put(
   "/:id",
@@ -44,6 +48,21 @@ commentController.delete(
 
     return res.status(StatusCodes.OK).json({
       message: `Comment succesfully deleted`,
+      data: result
+    });
+  })
+)
+
+commentController.post(
+  "/:id/like",
+  authGuard,
+  validateRequestParams(commentRouteParamsDtoSchema),
+  requestHandler(async(req:Request, res:Response) => {
+    const userId = req.user.id
+    const commentId = req.params["id"] as string;
+    const result = await commentService.toggleCommentLike(commentId, userId)
+
+    return res.status(StatusCodes.OK).json({
       data: result
     });
   })
