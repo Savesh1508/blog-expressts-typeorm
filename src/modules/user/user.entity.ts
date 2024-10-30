@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Column, OneToMany, CreateDateColumn } from 'typeorm';
+import { Entity, Column, OneToMany, CreateDateColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { Blog } from '../blog/blog.entity';
 import { Roles } from '../../shared/constants/roles.constants';
 import { Comment } from '../comments/comments.entity';
@@ -6,7 +6,7 @@ import { Like } from '../likes/likes.entity';
 
 @Entity()
 export class User {
-  @PrimaryColumn({type: 'uuid', nullable: false})
+  @PrimaryGeneratedColumn('uuid')
   id!: string;
 
   @Column({ type: 'varchar', length: 100, nullable: false, unique: true })
