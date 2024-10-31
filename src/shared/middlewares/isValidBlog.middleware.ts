@@ -11,16 +11,17 @@ export async function isValidBlogMiddleware(
   next: NextFunction
 ){
   try {
-    if (req.params['id']) {
-      const blogId = req.params['id'];
-      const blog = await blogRepo.findOne({where: { id: blogId } });
-
-      if (!blog) {
-        return next(new NotFoundException('Blog not found'));
-      }
-
-      next();
+    if (!req.params['id']) {
+      return next(new NotFoundException('Blog not found'));
     }
+
+    const blogId = req.params['id'];
+    const blog = await blogRepo.findOne({where: { id: blogId } });
+    if (!blog) {
+      return next(new NotFoundException('Blog not found'));
+    }
+
+    next();
   } catch (error) {
     next(new InternalServerErrorException('Something went wrong'));
   }

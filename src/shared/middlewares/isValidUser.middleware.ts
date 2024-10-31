@@ -11,17 +11,18 @@ export async function isValidUserMiddleware(
   next: NextFunction
 ){
   try {
-    if (req.body.userId || req.body.authorId) {
-      const userId = req.body.userId || req.body.authorId;
-      const user = await userRepo.findOne({where: { id: userId } });
-
-      if (!user) {
-        return next(new NotFoundException('Author not found'));
-      }
-
-      next();
+    if (!req.user.id) {
+      return next(new NotFoundException('Author not found'));
     }
+
+    const userId = req.user.id;
+    const user = await userRepo.findOne({where: { id: userId } });
+    if (!user) {
+      return next(new NotFoundException('Author not found'));
+    }
+
+    next();
   } catch (error) {
-    next(new InternalServerErrorException('Something went wrong'));
+    return next(new InternalServerErrorException('Something went wrong'));
   }
 };
