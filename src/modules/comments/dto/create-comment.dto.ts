@@ -1,12 +1,10 @@
-import { z } from 'zod';
+import { IsOptional, IsString, IsUUID } from "class-validator";
 
-export const commentCreateDtoSchema = z.object({
-  parentCommentId: z
-    .string()
-    .uuid('Invalid parent comment id')
-    .optional(),
-  content: z
-    .string(),
-});
+export class CreateCommentDto {
+  @IsOptional()
+  @IsUUID('4', { message: 'Invalid parent comment id' })
+  parentCommentId?: string;
 
-export type CreateCommentDto = z.infer<typeof commentCreateDtoSchema>;
+  @IsString()
+  content!: string;
+}

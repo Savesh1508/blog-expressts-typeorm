@@ -1,9 +1,6 @@
-import { z } from "zod";
+import { IsUUID } from "class-validator";
 
-export const blogRouteParamsDtoSchema = z.object({
-  id: z
-    .string()
-    .uuid()
-});
-
-export type BlogRouteParamsDto = z.infer<typeof blogRouteParamsDtoSchema>;
+export class BlogRouteParamsDto {
+  @IsUUID('4', { message: 'Invalid blog id' })
+  id!: string;
+}

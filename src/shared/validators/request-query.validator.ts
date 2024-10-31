@@ -1,25 +1,23 @@
 import { NextFunction, Request, Response } from "express";
-import { z, ZodError } from "zod";
+import { validate } from "class-validator";
+import { plainToClass } from "class-transformer";
 
-export function validateRequestQuery(schema: z.ZodObject<any, any>) {
-  return (req: Request, res: Response, next: NextFunction) => {
-    try {
-      req.query = schema.parse(req.query)
-      next();
-    } catch (error) {
-      if (error instanceof ZodError) {
-        const errorMessages = error.errors.map((error) => error.message);
+export function validateRequestQuery<T extends object>(dtoClass: new () => T) {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const dtoObject = plainToClass(dtoClass, req.query);
+    const errors = await validate(dtoObject);
 
-        return res.status(400).json({
-          message: "Bad Request",
-          errors: errorMessages,
-        });
-      }
+    if (errors.length > 0) {
+      const errorMessages = errors.flatMap(error =>
+        Object.values(error.constraints || {})
+      );
 
       return res.status(400).json({
         message: "Bad Request",
-        errors: ["Invalid search params"],
+        errors: errorMessages,
       });
     }
+
+    next();
   };
 }

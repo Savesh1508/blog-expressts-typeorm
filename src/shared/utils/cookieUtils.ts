@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import { envConfig } from "../config/env.config";
+import { envConfig } from "../config";
 
 export const setRefreshTokenCookie = (res: Response, refreshToken: string) => {
   res.cookie("refreshToken", refreshToken, {

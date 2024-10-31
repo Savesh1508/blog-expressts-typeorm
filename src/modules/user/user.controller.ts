@@ -1,4 +1,4 @@
-import { ChangePasswordDto, changePasswordDtoSchema } from './dto/change-password.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { StatusCodes } from 'http-status-codes';
 import { UserService } from './user.service';
 import { Router, Request, Response } from "express";
@@ -7,10 +7,10 @@ import { requestHandler } from "../../shared/utils/request-handler.util";
 import { db } from '../../database/database';
 import { User } from './user.entity';
 import { validateRequestBody } from '../../shared/validators/request-body.validator';
-import { updateUserDtoSchema, UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { adminGuard } from '../../shared/middlewares/guards/admin.guard';
 import { validateRequestParams } from '../../shared/validators/request-params.validator';
-import { userRouteParamsDtoSchema } from './dto/route-params-comments.dto';
+import { UserRouteParamsDto } from './dto/route-params-comments.dto';
 
 const userService = new UserService(db.connection.getRepository(User))
 
@@ -33,7 +33,7 @@ userController.get(
 userController.put(
   '/profile/change-password',
   authGuard,
-  validateRequestBody(changePasswordDtoSchema),
+  validateRequestBody(ChangePasswordDto),
   requestHandler(async(req: Request, res: Response) => {
     const userId:string = req.user.id;
     const changePasswordDto: ChangePasswordDto = req.body;
@@ -49,7 +49,7 @@ userController.put(
 userController.put(
   '/profile',
   authGuard,
-  validateRequestBody(updateUserDtoSchema),
+  validateRequestBody(UpdateUserDto),
   requestHandler(async(req: Request, res: Response) => {
     const userId:string = req.user.id;
     const updateUserDto: UpdateUserDto = req.body;
@@ -66,7 +66,7 @@ userController.put(
   '/:id/role',
   authGuard,
   adminGuard,
-  validateRequestParams(userRouteParamsDtoSchema),
+  validateRequestParams(UserRouteParamsDto),
   requestHandler(async(req: Request, res: Response) => {
     const userId = req.params["id"] as string
     const updatedUser = await userService.updateUserRole(userId)

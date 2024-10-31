@@ -4,7 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import "reflect-metadata"
 import { db } from "./database/database";
-import { envConfig } from "./shared/config/env.config"
+import { envConfig } from "./shared/config"
 
 import { loggerMiddleware } from "#/shared/middlewares/logger.middleware";
 import { errorMiddleware } from "#/shared/middlewares/error.middleware";

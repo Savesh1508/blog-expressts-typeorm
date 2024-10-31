@@ -1,17 +1,19 @@
-import { z } from 'zod';
+import { IsArray, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
-export const blogUpdateDtoSchema = z.object({
-  title: z
-    .string()
-    .min(3)
-    .max(255)
-    .optional(),
-  content: z
-    .string()
-    .optional(),
-  tags: z
-    .array(z.string())
-    .optional()
-});
+export class UpdateBlogDto {
+  @IsOptional()
+  @IsString()
+  @MinLength(3)
+  @MaxLength(255)
+  title?: string;
 
-export type UpdateBlogDto = z.infer<typeof blogUpdateDtoSchema>;
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  content?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  tags?: string[];
+}
