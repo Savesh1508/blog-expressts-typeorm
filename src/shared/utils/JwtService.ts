@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken"
 import { envConfig } from "../config/env.config";
+import { JwtPayload } from "../types/jwt-payload.types";
 
 class JwtService {
   constructor(

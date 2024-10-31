@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { jwtService } from '../../utils/JwtService';
 import { BadRequestException, UnauthorizedException } from '../../exceptions/http.exception';
+import { JwtPayload } from '../../types/jwt-payload.types';
 
 export function authGuard(req: Request, res: Response, next: NextFunction) {
   const authorization = req.headers.authorization;
@@ -18,6 +19,6 @@ export function authGuard(req: Request, res: Response, next: NextFunction) {
     throw new BadRequestException("Invalid or expired token");
   }
 
-  req.user = result
+  req.user = result as JwtPayload
   next()
 }
