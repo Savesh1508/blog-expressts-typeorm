@@ -5,7 +5,7 @@ import { EnvConfig } from './env.config'
 
 dotenv.config()
 
-export function validateEnv(config: Record<string, unknown>): EnvConfig {
+export function validateEnv(config: unknown): EnvConfig {
   const envConfig = plainToInstance(EnvConfig, config, { enableImplicitConversion: true })
   const errors = validateSync(envConfig)
 
