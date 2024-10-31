@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { db } from '../../../database/database';
 import { ForbiddenException, NotFoundException } from '../../exceptions/http.exception';
 
-export function userSelfGuard(entity: any, userIdField: string) {
+export function userSelfGuard(entity: any, userIdField: string, customMessage?:string) {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const resourceId = req.params['id'];
@@ -14,7 +14,9 @@ export function userSelfGuard(entity: any, userIdField: string) {
       }
 
       if (req.user.id != foundResource[userIdField]) {
-        throw new ForbiddenException('Access denied: Only author can do this action');
+        throw new ForbiddenException(
+          customMessage || 'Access denied: Only author can do this action'
+        );
       }
 
       next();

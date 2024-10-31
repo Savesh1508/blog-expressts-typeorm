@@ -5,7 +5,7 @@ import { userSelfGuard } from './user-self.guard';
 import { Roles } from '../../constants/roles.constants';
 
 export function userSelfOrAdminGuard(entity: any, userIdField: string) {
-  const selfGuard = userSelfGuard(entity, userIdField);
+  const selfGuard = userSelfGuard(entity, userIdField, 'Access denied: Only author or admin can delete');
 
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
