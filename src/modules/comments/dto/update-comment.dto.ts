@@ -1,9 +1,7 @@
-import { z } from 'zod';
+import { IsOptional, IsString} from "class-validator";
 
-export const commentUpdateDtoSchema = z.object({
-  content: z
-    .string()
-    .optional(),
-});
-
-export type UpdateCommentDto = z.infer<typeof commentUpdateDtoSchema>;
+export class UpdateCommentDto {
+  @IsOptional()
+  @IsString()
+  content?: string;
+}

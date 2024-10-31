@@ -1,9 +1,6 @@
-import { z } from "zod";
+import { IsUUID } from "class-validator";
 
-export const userRouteParamsDtoSchema = z.object({
-  id: z
-    .string()
-    .uuid()
-});
-
-export type UserRouteParamsDto = z.infer<typeof userRouteParamsDtoSchema>;
+export class UserRouteParamsDto {
+  @IsUUID('4', { message: 'Invalid user id' })
+  id!: string;
+}

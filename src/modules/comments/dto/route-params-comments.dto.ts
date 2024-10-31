@@ -1,9 +1,6 @@
-import { z } from "zod";
+import { IsUUID } from "class-validator";
 
-export const commentRouteParamsDtoSchema = z.object({
-  id: z
-    .string()
-    .uuid()
-});
-
-export type CommentRouteParamsDto = z.infer<typeof commentRouteParamsDtoSchema>;
+export class CommentRouteParamsDto {
+  @IsUUID('4', { message: 'Invalid comment id' })
+  id!: string;
+}

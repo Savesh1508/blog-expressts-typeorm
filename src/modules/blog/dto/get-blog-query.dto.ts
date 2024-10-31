@@ -1,25 +1,21 @@
-import { z } from 'zod';
+import { IsOptional, IsString, IsInt, Min, Max } from 'class-validator';
+import { Transform } from 'class-transformer';
 
-export const getBlogsQueryDtoSchema = z.object({
-  search: z
-    .string()
-    .optional(),
+export class GetBlogsQueryDto {
+  @IsOptional()
+  @IsString()
+  search?: string;
 
-  page: z
-    .string()
-    .optional()
-    .transform((val) => (val ? parseInt(val, 10) : undefined))
-    .refine((val) => val === undefined || val <= 1, {
-      message: 'Page must be a number greater than or equal to 1',
-    }),
+  @IsOptional()
+  @Transform(({ value }) => (value ? parseInt(value, 10) : undefined))
+  @IsInt({ message: 'Page must be an integer' })
+  @Min(1, { message: 'Page must be greater than or equal to 1' })
+  page?: number;
 
-  limit: z
-    .string()
-    .optional()
-    .transform((val) => (val ? parseInt(val, 10) : undefined))
-    .refine((val) => val === undefined || val <= 1, {
-      message: 'Limit must be a number between 1 and 100',
-    }),
-});
-
-export type GetBlogsQueryDto = z.infer<typeof getBlogsQueryDtoSchema>;
+  @IsOptional()
+  @Transform(({ value }) => (value ? parseInt(value, 10) : undefined))
+  @IsInt({ message: 'Limit must be an integer' })
+  @Min(1, { message: 'Limit must be greater than or equal to 1' })
+  @Max(100, { message: 'Limit must be less than or equal to 100' })
+  limit?: number;
+}
