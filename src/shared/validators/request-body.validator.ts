@@ -8,7 +8,7 @@ export function validateRequestBody(schema: z.ZodObject<any, any>) {
       next();
     } catch (error) {
       if (error instanceof ZodError) {
-        const errorMessages = error.errors.map((error) => error.message);
+        const errorMessages = error.errors.map((error) => `${error.path}: ${error.message}`);
 
         return res.status(400).json({
           message: "Bad Request",

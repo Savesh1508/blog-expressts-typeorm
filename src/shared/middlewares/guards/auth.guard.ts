@@ -1,4 +1,3 @@
-import { JwtPayload } from './../../types/jwt-payload.types';
 import { Request, Response, NextFunction } from 'express';
 import { jwtService } from '../../utils/JwtService';
 import { BadRequestException, UnauthorizedException } from '../../exceptions/http.exception';
@@ -14,7 +13,7 @@ export function authGuard(req: Request, res: Response, next: NextFunction) {
     throw new UnauthorizedException('Invalid token format');
   }
 
-  const result = jwtService.verifyAccess(token) as JwtPayload
+  const result = jwtService.verifyAccess(token)
   if (!result) {
     throw new BadRequestException("Invalid or expired token");
   }

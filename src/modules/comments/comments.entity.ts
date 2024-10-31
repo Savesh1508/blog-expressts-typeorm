@@ -6,24 +6,24 @@ import { Like } from '../likes/likes.entity';
 @Entity()
 export class Comment {
   @PrimaryGeneratedColumn("uuid")
-  id: string;
+  id!: string;
 
   @Column({type: "uuid", nullable: false})
-  blogId: string;
-
-  @Column({type: "uuid", nullable: false})
-  userId: string;
-
-  @ManyToOne(() => User, (user) => user.comments)
-  @JoinColumn({ name: 'userId' })
-  user!: User
+  blogId!: string;
 
   @ManyToOne(() => Blog, (blog) => blog.comments)
   @JoinColumn({ name: 'blogId' })
   blog!: Blog
 
+  @Column({type: "uuid", nullable: false})
+  userId!: string;
+
+  @ManyToOne(() => User, (user) => user.comments)
+  @JoinColumn({ name: 'userId' })
+  user!: User
+
   @Column({ type: 'text', nullable: false })
-  content: string;
+  content!: string;
 
   @Column({type: "uuid", nullable: true})
   parentCommentId?: string;
@@ -52,12 +52,5 @@ export class Comment {
     if (this.likesCount < 0) {
       this.likesCount = 0;
     }
-  }
-
-  constructor(id:string, blogId:string, userId:string, content:string) {
-    this.id = id
-    this.blogId = blogId;
-    this.userId = userId;
-    this.content = content;
   }
 }

@@ -11,8 +11,8 @@ export class CommentService {
     private likeRepository: Repository<Like>
   ) {}
 
-  async createComment(blogId:string, createCommentDto: CreateCommentDto) {
-    const { userId, content, parentCommentId } = createCommentDto;
+  async createComment(userId:string, blogId:string, createCommentDto: CreateCommentDto) {
+    const { content, parentCommentId } = createCommentDto;
 
     const parentComment = parentCommentId
       ? await this.commentRepository.findOne({ where: { id: parentCommentId } })

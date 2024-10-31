@@ -1,9 +1,6 @@
 import { z } from 'zod';
 
 export const blogCreateDtoSchema = z.object({
-  authorId: z
-    .string()
-    .uuid('Invalid author id'),
   title: z
     .string()
     .min(3)

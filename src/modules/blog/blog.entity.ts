@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn, OneToMany, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, OneToMany, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, BeforeUpdate } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Comment } from '../comments/comments.entity';
 import { Like } from '../likes/likes.entity';
@@ -6,20 +6,20 @@ import { Like } from '../likes/likes.entity';
 @Entity()
 export class Blog {
   @PrimaryGeneratedColumn("uuid")
-  id: string;
+  id!: string;
 
   @Column({type: "uuid", nullable: false})
-  authorId: string;
+  authorId!: string;
 
   @ManyToOne(() => User, (user) => user.blogs)
   @JoinColumn({ name: 'authorId' })
   author!: User
 
   @Column({ type: 'varchar', length: 120, nullable: false })
-  title: string;
+  title!: string;
 
   @Column({ type: 'text', nullable: false })
-  content: string;
+  content!: string;
 
   @Column('text', { array: true, nullable: true })
   tags?: string[];
@@ -39,11 +39,10 @@ export class Blog {
   @Column({ type: "int", default: 0 })
   likesCount!: number;
 
-  constructor(id:string, authorId: string, title: string, content: string, tags?: string[]) {
-    this.id = id
-    this.authorId = authorId;
-    this.title = title;
-    this.content = content;
-    this.tags = tags;
+  @BeforeUpdate()
+  checkLikesCount() {
+    if (this.likesCount < 0) {
+      this.likesCount = 0;
+    }
   }
 }

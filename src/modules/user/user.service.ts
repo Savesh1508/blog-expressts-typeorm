@@ -15,7 +15,7 @@ export class UserService{
   async getUserProfile(id:string){
     const user = await this.userRepository.findOne({
       where: { id },
-      relations: ['blogs']
+      relations: ['blogs', 'likes']
     })
     if (!user) {
       throw new NotFoundException('User not found')
@@ -26,6 +26,7 @@ export class UserService{
       username: user.username,
       email: user.email,
       blogs: user.blogs,
+      likes: user.likes,
       createdAt: user.createdAt
     }
   }
@@ -73,13 +74,11 @@ export class UserService{
       { username, id: Not(id) }
     ]})
 
-    if (existingUser) {
-      if (existingUser.email === email) {
-        throw new BadRequestException('Email is already taken');
-      }
-      if (existingUser.username === username) {
-        throw new BadRequestException('Username is already taken');
-      }
+    if (existingUser && existingUser.email === email) {
+      throw new BadRequestException('User with such email already exists');
+    }
+    if (existingUser && existingUser.username === username) {
+      throw new BadRequestException('User with such username already exists');
     }
 
     if (email) {
