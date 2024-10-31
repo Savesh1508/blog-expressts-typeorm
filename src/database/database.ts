@@ -3,7 +3,7 @@ import { DataSource } from "typeorm";
 import { User } from "../modules/user/user.entity";
 import { Blog } from "../modules/blog/blog.entity";
 import { Comment } from "../modules/comments/comments.entity";
-import { envConfig } from "../shared/config/env.config";
+import { envConfig } from "../shared/config";
 import { Like } from "../modules/likes/likes.entity";
 
 export class DbClient {
