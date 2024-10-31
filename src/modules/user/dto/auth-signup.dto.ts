@@ -8,6 +8,9 @@ export const signUpDtoSchema = z.object({
     .email(),
   password: z
     .string()
+    .min(8),
+  confirmPassword: z
+    .string()
     .min(8)
 });
 

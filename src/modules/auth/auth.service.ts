@@ -15,12 +15,23 @@ export class AuthService {
   constructor(private userRepository: Repository<User>) {}
 
   async signup(signUpDto: SignUpDto) {
-    const { username, email, password } = signUpDto;
+    const { username, email, password, confirmPassword } = signUpDto;
 
-    const existingUser = await this.userRepository.findOne({ where: { email } });
+    const existingUser = await this.userRepository.findOne({
+      where: [
+        { email },
+        { username }
+      ]
+    });
+    if (existingUser && existingUser.email === email) {
+      throw new BadRequestException('User with such email already exists');
+    }
+    if (existingUser && existingUser.username === username) {
+      throw new BadRequestException('User with such username already exists');
+    }
 
-    if (existingUser) {
-      throw new BadRequestException('This user already exists');
+    if (password !== confirmPassword) {
+      throw new BadRequestException('Passwords do not match')
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);

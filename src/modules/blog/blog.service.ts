@@ -14,11 +14,11 @@ export class BlogService {
     private likeRepository: Repository<Like>
   ) {}
 
-  async createBlog(createBlogDto: CreateBlogDto) {
-    const { authorId, title, content, tags } = createBlogDto;
+  async createBlog(userId:string, createBlogDto: CreateBlogDto) {
+    const { title, content, tags } = createBlogDto;
 
     const newBlog = this.blogRepository.create({
-      authorId,
+      authorId: userId,
       title,
       content,
       tags,

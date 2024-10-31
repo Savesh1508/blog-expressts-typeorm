@@ -21,14 +21,12 @@ import { userSelfGuard } from "../../shared/middlewares/guards/user-self.guard";
 import { userSelfOrAdminGuard } from "../../shared/middlewares/guards/user-self-or-admin.guard";
 import { Like } from '../likes/likes.entity';
 
-
 export const blogController = Router();
 
 const blogService = new BlogService(
   db.connection.getRepository(Blog),
   db.connection.getRepository(Like)
 )
-
 
 const commentService = new CommentService(
   db.connection.getRepository(Comment),
@@ -41,8 +39,9 @@ blogController.post(
   validateRequestBody(blogCreateDtoSchema),
   isValidUserMiddleware,
   requestHandler(async(req:Request, res:Response) => {
+    const userId = req.user.id
     const createBlogDto: CreateBlogDto = req.body;
-    const result = await blogService.createBlog(createBlogDto);
+    const result = await blogService.createBlog(userId, createBlogDto);
 
     return res.status(StatusCodes.CREATED).json({
       message: `Blog succesfully created`,
@@ -122,7 +121,7 @@ blogController.post(
   requestHandler(async(req:Request, res:Response) => {
     const userId = req.user.id
     const blogId = req.params["id"] as string;
-    const result = await commentService.toggleCommentLike(blogId, userId)
+    const result = await blogService.toggleBlogLike(blogId, userId)
 
     return res.status(StatusCodes.OK).json({
       data: result
@@ -138,9 +137,10 @@ blogController.post(
   isValidUserMiddleware,
   isValidBlogMiddleware,
   requestHandler(async(req:Request, res:Response) => {
+    const userId = req.user.id
     const blogId = req.params["id"] as string;
     const createCommentDto: CreateCommentDto = req.body;
-    const result = await commentService.createComment(blogId, createCommentDto);
+    const result = await commentService.createComment(userId, blogId, createCommentDto);
 
     return res.status(StatusCodes.CREATED).json({
       message: `Comment succesfully created`,
